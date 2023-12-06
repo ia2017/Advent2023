@@ -3,9 +3,10 @@ with open("inputs/Day3", newline="\n") as f:
 
 print(lines)
 
-
 part_sum = 0
 symbol_bool = 0
+total_sum = 0
+char = ""
 
 for i in range(len(lines)):
     line = lines[i]
@@ -19,39 +20,86 @@ for i in range(len(lines)):
             current_number += char
             number_index += 1
 
-        elif not char.isdigit() and current_number != "":
+        elif (not char.isdigit() and current_number != ""):
             current_number = int(current_number)
             # LEFT
             if line[j - 1 - number_index] != "." and not line[j - 1 - number_index].isdigit():
                 symbol_bool += 1
+                # symbols.append(line[j - 1 - number_index])
 
             # RIGHT
             if char != "." and not char.isdigit():
                 symbol_bool += 1
-
+                # symbols.append(char)
 
             # TOP & BOTTOM
             for k in range(j - 1 - number_index, j + 1, 1):
+                # Top
                 if i > 0:
-                    if lines[i - 1][k] != ".":
+                    if lines[i - 1][k] != "." and not lines[i - 1][k].isdigit():
                         symbol_bool += 1
+                        # symbols.append(lines[i - 1][k])
 
+                # Bottom
                 if i < len(lines) - 1:
-                    if lines[i + 1][k] != ".":
+                    if lines[i + 1][k] != "." and not lines[i + 1][k].isdigit():
                         symbol_bool += 1
+                        # symbols.append(lines[i + 1][k])
 
-            print(f"current_number : {current_number}, bool : {symbol_bool}")
+            print(f"current_number : {current_number}, bool : {symbol_bool}, "
+                  # f"symbols: {symbols}"
+                  )
             # print(number_index)
 
             if symbol_bool > 0:
                 part_sum += current_number
+            total_sum += current_number
 
             symbol_bool = 0
             number_index = 0
             current_number = ""
+            symbols = []
+
 
         else:
             pass
+
+    # Last digit on line
+    if char.isdigit():
+        current_number = int(current_number)
+        # LEFT
+        if line[j - number_index] != "." and not line[j - number_index].isdigit():
+            symbol_bool += 1
+            # symbols.append(line[j - 1 - number_index])
+
+
+        # TOP & BOTTOM
+        for k in range(j - number_index, j + 1, 1):
+            # Top
+            if i > 0:
+                if lines[i - 1][k] != "." and not lines[i - 1][k].isdigit():
+                    symbol_bool += 1
+                    # symbols.append(lines[i - 1][k])
+
+            # Bottom
+            if i < len(lines) - 1:
+                if lines[i + 1][k] != "." and not lines[i + 1][k].isdigit():
+                    symbol_bool += 1
+                    # symbols.append(lines[i + 1][k])
+
+        print(f"current_number : {current_number}, bool : {symbol_bool}, "
+              # f"symbols: {symbols}"
+              )
+        # print(number_index)
+
+        if symbol_bool > 0:
+            part_sum += current_number
+        total_sum += current_number
+
+        symbol_bool = 0
+        number_index = 0
+        current_number = ""
+        symbols = []
 
 
 
@@ -153,3 +201,4 @@ for i in range(len(lines)):
         # # Checking if number
 
 print(part_sum)
+print(total_sum)
