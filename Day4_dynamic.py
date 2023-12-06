@@ -2,6 +2,7 @@ with open("inputs/Day4", newline="\n") as f:
     lines = [line.rstrip() for line in f]
 
 print(lines)
+card_count_total = 0
 
 def process_card(winning_no, current_no):
 
@@ -23,34 +24,42 @@ def process_card(winning_no, current_no):
     return point, count
 
 
-def process_copy(start, stop, lines):
-
+def dynamicSolution(n, lines):
     points = 0
-    card_count_total = 0
+    p1 = 0
+    card_dict = []
 
-    for i in range(start, stop, 1):
+    N = {}
 
+    # Process cards
+    for i, line in enumerate(lines):
+        if i not in N.keys():
+            N[i] = 1
+        else:
+            N[i] += 1
         # Process
-        card_no = int(lines[i].split(":")[0].split(" ")[-1])
+        # card_no = int(lines[i].split(":")[0].split(" ")[-1])
         winning_no = lines[i].split(":")[1].split("|")[0].split(" ")
         current_no = lines[i].split(":")[1].split("|")[1].split(" ")
 
-        # Process current card
         point, count = process_card(winning_no, current_no)
-        print(f"card_no: {card_no}, count: {count}, i: {i}")
+        card_dict.append(count)
+        # for j in range()
 
-        # if count > 0:
-        point_rec, card_count = process_copy(i + 1, i + count + 1, lines)
+        for j in range(count):
+            if i + 1 + j not in N.keys():
+                N[i + 1 + j] = N[i]
+            else:
+                N[i+1+j] += N[i]
 
         points += point
-        card_count_total += card_count + 1
 
-    return points, card_count_total
+    print(sum(N.values()))
 
+    return points
 
-points, card_count_total = process_copy(0, len(lines), lines)
-
+points = dynamicSolution(len(lines), lines)
 print(points)
-print(card_count_total)
-
+print(f"Card total: {card_count_total}")
+print("Actual answer: 5659035")
 
