@@ -1,2 +1,4 @@
-for i in range(0 + 1, 1 + 1, 1):
+i=0
+while True:
     print(i)
+    i +=1
