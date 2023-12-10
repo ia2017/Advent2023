@@ -55,19 +55,19 @@ print(f"LCM: {math.lcm(lowest_count[0], lowest_count[1], lowest_count[2], lowest
 
 # Finding LCM
 
-# while True:
-#     lcm_bool = 0
-#     for count in lowest_count:
-#         if z % count != 0:
-#             lcm_bool += 1
-#
-#     if lcm_bool == 0:
-#         lcm_bool = z
-#         break
-#     z += 1
-#     print(z)
+def gcd(a, b):
+    if min(a, b) == 0:
+        return max(a, b)
+    a_1 = max(a, b) % min(a,b)
+    return gcd(a_1, min(a,b))
 
-print(z)
+def lcm(a, b):
+    return (a * b) // gcd(a, b)
+
+current_lcm = lowest_count[0]
+for i in range(len(lowest_count) - 1):
+    current_lcm = lcm(current_lcm, lowest_count[i + 1])
+print(current_lcm)
 
 
 
