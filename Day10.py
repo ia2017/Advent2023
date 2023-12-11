@@ -1,4 +1,4 @@
-with open("inputs/Day10_test", newline="\n") as f:
+with open("inputs/Day10", newline="\n") as f:
     lines = [line.rstrip() for line in f]
 
 print(lines)
@@ -75,21 +75,30 @@ for i in range(len(lines)):
 
 def bfs(graph, src):
     visited = [src]
-    current_length = 0
-    lengths = [current_length]
+    pred = {src : ""}
+    lengths = []
+
     queue = [src]
 
     while queue:
         m = queue.pop(0)
-        current_length += 1
         for neighbour in graph[m]:
             if neighbour not in visited:
                 visited.append(neighbour)
                 queue.append(neighbour)
-                lengths.append(current_length)
+                pred[neighbour] = m
 
-    print(visited)
-    print(lengths)
+    for i in range(len(visited)):
+        length = 0
+        current_node = visited[i]
 
-print(start_node)
-bfs(graph, start_node)
+        while current_node != src:
+            current_node = pred[current_node]
+            length += 1
+        lengths.append(length)
+
+    return lengths
+
+lengths = bfs(graph, start_node)
+
+print(lengths[-1])
