@@ -2,7 +2,7 @@ with open("inputs/Day5", newline="\n") as f:
     lines = [line.rstrip() for line in f]
 
 seed_dict = {}
-seed_title = 
+seed_title =
 
 print(lines)
 
