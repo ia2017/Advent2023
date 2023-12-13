@@ -1,2 +1,4 @@
-for i in range(0 + 1, 1 + 1, 1):
-    print(i)
+i=["a", "b"]
+
+i.remove("c")
+print(i)
