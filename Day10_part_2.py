@@ -1,4 +1,4 @@
-with open("inputs/Day10_test", newline="\n") as f:
+with open("inputs/Day10", newline="\n") as f:
     lines = [line.rstrip() for line in f]
 
 print(lines)
@@ -130,9 +130,7 @@ def bfs(graph, src):
 
         lengths.append(length)
 
-
-
-    print("VISITED")
+    print("----- VISITED -----")
     # Ray casting
 
     within_loop = 0
@@ -140,6 +138,7 @@ def bfs(graph, src):
     for i in range(len(lines)):
         for j in range(len(lines[i])):
             current_node = f"{i},{j}"
+
             if current_node not in visited:
                 count_right = 0
                 count_left = 0
@@ -148,62 +147,121 @@ def bfs(graph, src):
 
                 # Look right
                 if j < len(lines[i]) - 1:
-                    prev_line = ""
-                    for k in range(j + 1, len(lines[i]) - 1, 1):
+                    start_intersect = ""
+                    start_bool = False
+                    for k in range(j + 1, len(lines[i]), 1):
                         if f"{i},{k}" in visited:
-                            # Store the edge
-                            if prev_line == "" or prev_line == "|":
+                            # print(f"all: {lines[i][k]}")
+                            if not start_bool:
+                                start_intersect = lines[i][k]
+                                if lines[i][k] == "|":
+                                    start_bool = False
+                                else:
+                                    start_bool = True
                                 count_right += 1
-                                prev_line = lines[i][k]
-                            elif lines[i][k] not in connections_left[prev_line]:
+                            elif start_bool and start_intersect == "L" and lines[i][k] == "7":
+                                start_bool = False
+                            elif start_bool and start_intersect == "F" and lines[i][k] == "J":
+                                start_bool = False
+                            elif start_bool and start_intersect == "L" and lines[i][k] == "-":
+                                pass
+                            elif start_bool and start_intersect == "F" and lines[i][k] == "-":
+                                pass
+                            else:
                                 count_right += 1
-                                prev_line = lines[i][k]
-
-
+                                start_bool = False
 
                 # Look left
                 if j > 0:
-                    prev_line = ""
+                    start_intersect = ""
+                    start_bool = False
                     for k in range(0, j, 1):
                         if f"{i},{k}" in visited:
-                            if prev_line == "" or prev_line == "|":
+                            if not start_bool:
+                                start_intersect = lines[i][k]
+                                if lines[i][k] == "|":
+                                    start_bool = False
+                                else:
+                                    start_bool = True
                                 count_left += 1
-                                prev_line = lines[i][k]
-                            elif lines[i][k] not in connections_left[prev_line]:
+                            elif start_bool and start_intersect == "L" and lines[i][k] == "7":
+                                start_bool = False
+                            elif start_bool and start_intersect == "F" and lines[i][k] == "J":
+                                start_bool = False
+                            elif start_bool and start_intersect == "L" and lines[i][k] == "-":
+                                pass
+                            elif start_bool and start_intersect == "F" and lines[i][k] == "-":
+                                pass
+                            else:
                                 count_left += 1
-                                prev_line = lines[i][k]
+                                start_bool = False
 
                 # Look down
                 if i < len(lines) - 1:
-                    prev_line = ""
-                    for k in range(i + 1, len(lines) - 1, 1):
+                    start_intersect = ""
+                    start_bool = False
+                    for k in range(i + 1, len(lines), 1):
                         if f"{k},{j}" in visited:
-                            if prev_line == "" or prev_line == "-":
+                            # if f"{i},{j}" == "4,8":
+                            #     print(f"all: {lines[k][j]}")
+                            if not start_bool:
+                                # if f"{i},{j}" == "4,8":
+                                #     print(f"not bool: {lines[k][j]}")
+                                start_intersect = lines[k][j]
+                                if lines[k][j] == "-":
+                                    start_bool = False
+                                else:
+                                    start_bool = True
                                 count_down += 1
-                                prev_line = lines[k][j]
-                            elif lines[k][j] not in connections_down[prev_line]:
+                            elif start_bool and start_intersect == "F" and lines[k][j] == "J":
+                                start_bool = False
+                            elif start_bool and start_intersect == "7" and lines[k][j] == "L":
+                                start_bool = False
+                            elif start_bool and start_intersect == "F" and lines[k][j] == "|":
+                                pass
+                            elif start_bool and start_intersect == "7" and lines[k][j] == "|":
+                                pass
+                            else:
+                                # if f"{i},{j}" == "4,8":
+                                #     print(f"else: {lines[k][j]}")
                                 count_down += 1
-                                prev_line = lines[k][j]
+                                start_bool = False
                 # Look up
                 if i > 0:
-                    prev_line = ""
+                    start_intersect = ""
+                    start_bool = False
                     for k in range(0, i, 1):
                         if f"{k},{j}" in visited:
-                            if prev_line == "" or prev_line == "-":
+                            if not start_bool:
+                                start_intersect = lines[k][j]
+                                if lines[k][j] == "-":
+                                    start_bool = False
+                                else:
+                                    start_bool = True
                                 count_up += 1
-                                prev_line = lines[k][j]
-                            elif lines[k][j] not in connections_down[prev_line]:
+                            elif start_bool and start_intersect == "F" and lines[k][j] == "J":
+                                start_bool = False
+                            elif start_bool and start_intersect == "7" and lines[k][j] == "L":
+                                start_bool = False
+                            elif start_bool and start_intersect == "F" and lines[k][j] == "|":
+                                pass
+                            elif start_bool and start_intersect == "7" and lines[k][j] == "|":
+                                pass
+                            else:
                                 count_up += 1
-                                prev_line = lines[k][j]
-                # print(f"{i},{j}")
-                # print(count_left)
-                # print(count_right)
-                # print(count_up)
-                # print(count_down)
-                # print("----------------")
+                                start_bool = False
+
+                # if f"{i},{j}" == "5,8":
+                #     print("----------------")
+                #     print(f"{i},{j}")
+                #     print(count_left)
+                #     print(count_right)
+                #     print(count_up)
+                #     print(count_down)
+                #     print("----------------")
 
                 if count_up % 2 != 0 and count_down % 2 != 0 and count_right % 2 != 0 and count_left % 2 != 0:
-                    print(current_node)
+                    # print(current_node)
                     within_loop += 1
 
     return lengths, within_loop
