@@ -1,6 +1,6 @@
 import math
 
-with open("inputs/Day13_test", newline="\n") as f:
+with open("inputs/Day13", newline="\n") as f:
     lines = [line.rstrip() for line in f]
 
 print(lines)
@@ -16,42 +16,131 @@ for line in lines:
 
 line_list.append(current_pattern)
 
-mid = 0
+total = 0
 
 for i in range(len(line_list)):
+# for i in range(17,18):
     pattern = line_list[i]
+    for j in pattern:
+        print(j)
+    print("\n")
 
     bool_row = False
-    # Check row case
-    if pattern[0] == pattern[len(pattern) - 1]:
-        mid += math.floor((0 + len(pattern) + 1) / 2) * 100
-        bool_row = True
+    # print("------------")
 
-    if pattern[0] == pattern[len(pattern) - 2]:
-        mid += math.floor((0 + len(pattern) - 1 + 1) / 2) * 100
-        bool_row = True
+    # ----- Check row case -----
+    row_bool = False
+    row_pivot = 0
+    row_inc = 0
+    count_row = 0
+    row_count_cache = []
+    row_pivot_cache = []
+    for j in range(1, len(pattern), 1):
+        if row_bool:
+            # print(f"pivots j: {j} : {row_pivot + row_inc}, {row_pivot - 1 - row_inc}")
+            if pattern[row_pivot + row_inc] == pattern[row_pivot - 1 - row_inc]:
+                count_row += 1
+                row_inc += 1
+            else:
+                row_count_cache.append(count_row)
+                row_pivot_cache.append(row_pivot)
 
-    if pattern[1] == pattern[len(pattern) - 1]:
-        mid += math.floor((1 + len(pattern) + 1) / 2) * 100
-        bool_row = True
+                row_bool = False
 
-    # Check column case
-    if not bool_row:
-        column_left = "".join([pattern[x][0] for x in range(len(pattern))])
-        column_right = "".join([pattern[x][-1] for x in range(len(pattern))])
-        column_left_plus = "".join([pattern[x][1] for x in range(len(pattern))])
-        column_right_plus = "".join([pattern[x][-2] for x in range(len(pattern))])
+            if row_pivot - 1 - row_inc < 0:
+                row_count_cache.append(count_row)
+                row_pivot_cache.append(row_pivot)
 
-        if column_left == column_right:
-            mid += math.floor((0 + len(column_right) + 1) / 2)
+                row_bool = False
 
-        if column_left == column_right_plus:
-            mid += math.floor((0 + len(column_right) - 1 + 1) / 2)
+            if row_pivot + row_inc > len(pattern) - 1:
+                break
 
-        if column_left_plus == column_right:
-            mid += math.floor((1 + len(column_right) + 1) / 2)
 
-print(mid)
+        if pattern[j] == pattern[j - 1] and not row_bool:
+            count_row = 0
+            row_inc = 0
+            row_pivot = j
+            row_inc += 1
+            count_row += 1
+            row_bool = True
+    if row_pivot < len(pattern) - 1:
+        row_count_cache.append(count_row)
+        row_pivot_cache.append(row_pivot)
+
+    # ----- Check column case ------
+    columns = []
+
+    columns.append("".join([pattern[x][0] for x in range(len(pattern))]))
+
+    col_bool = False
+    col_pivot = 0
+    col_inc = 0
+    count_col = 0
+    col_count_cache = []
+    col_pivot_cache = []
+
+    for j in range(1, len(pattern[0]), 1):
+        columns.append("".join([pattern[x][j] for x in range(len(pattern))]))
+
+    for j in range(1, len(columns), 1):
+        if col_bool:
+            if columns[col_pivot + col_inc] == columns[col_pivot - 1 - col_inc]:
+                count_col += 1
+                col_inc += 1
+            else:
+                col_count_cache.append(count_col)
+                col_pivot_cache.append(col_pivot)
+
+                col_bool = False
+
+            if col_pivot - 1 - col_inc < 0:
+                col_count_cache.append(count_col)
+                col_pivot_cache.append(col_pivot)
+
+                col_bool = False
+
+            if col_pivot + col_inc > len(columns) - 1:
+                break
+
+
+        if columns[j] == columns[j - 1] and not col_bool:
+            count_col = 0
+            col_inc = 0
+            col_pivot = j
+            col_inc += 1
+            count_col += 1
+            col_bool = True
+
+    if col_pivot < len(columns) - 1:
+        col_count_cache.append(count_col)
+        col_pivot_cache.append(col_pivot)
+
+    if not row_count_cache:
+        row_count_cache = [0]
+    if not col_count_cache:
+        col_count_cache = [0]
+
+    print(f"{i} : {max(row_count_cache)}, {max(col_count_cache)}")
+
+    if max(row_count_cache) > max(col_count_cache):
+        index = row_count_cache.index(max(row_count_cache))
+        total += row_pivot_cache[index] * 100
+    elif max(row_count_cache) < max(col_count_cache):
+        index = col_count_cache.index(max(col_count_cache))
+        total += col_pivot_cache[index]
+    else:
+        if len(pattern) - 2 * max(row_count_cache) < len(columns) - 2 * max(col_count_cache) and max(row_count_cache) > 0:
+            index = row_count_cache.index(max(row_count_cache))
+            total += row_pivot_cache[index] * 100
+        elif len(pattern) - 2 * max(row_count_cache) > len(columns) - 2 * max(col_count_cache) and max(col_count_cache) > 0:
+            index = col_count_cache.index(max(col_count_cache))
+            total += col_pivot_cache[index]
+
+        else:
+            print("None")
+
+print(total)
 
 
 
