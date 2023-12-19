@@ -1,4 +1,4 @@
-i=["a", "b"]
 
-i.remove("c")
-print(i)
+for i in range(1000000000):
+
+    print(i)
