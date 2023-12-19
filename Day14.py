@@ -18,7 +18,6 @@ def calculate_load(lines):
                 count += 1
             elif lines[i][col] == "#":
                 # counts.append(count)
-
                 current_load = length - prev_hash - 1
                 for j in range(count):
                     total_load += current_load
@@ -160,6 +159,9 @@ def plot(o_list):
     return output
 
 
+saved_loads = []
+initial_index = 0
+modelled_load = 0
 for n in range(cycles):
     # North - get positions
     o_list = north(o_list)
@@ -173,13 +175,35 @@ for n in range(cycles):
     # East
     o_list = east(o_list)
 
-    # print(total_load_2)
-    print(n)
+    # Get pattern
+
+    total_load_2 = calculate_load_2(o_list, hash_list)
+
+    if n > 200 and len(saved_loads) > 5:
+        if saved_loads[:5] == saved_loads[-5:]:
+
+            load_cycle = saved_loads[:-5]
+            cycles_left = cycles - initial_index
+
+            remainder = cycles_left % len(load_cycle)
+            modelled_load = load_cycle[remainder]
+
+            break
+            # saved_loads = []
+    if len(saved_loads) > 500:
+        saved_loads = []
+        initial_index = n + 1
+
+
+    saved_loads.append(total_load_2)
+
+
+
+    print(f"{n} : {total_load_2}")
     pass
 
-total_load_2 = calculate_load_2(o_list, hash_list)
 
 print("-------------")
 print(total_load)
-print(total_load_2)
+print(modelled_load)
 print("-------------")
