@@ -1,4 +1,4 @@
-with open("inputs/Day14_test", newline="\n") as f:
+with open("inputs/Day14", newline="\n") as f:
     lines = [line.rstrip() for line in f]
 
 # print(lines)
@@ -36,6 +36,16 @@ def calculate_load(lines):
 
     return total_load
 
+def calculate_load_2(o_list, hash_list):
+    length = len(lines)
+    total_load = 0
+
+    for i in range(len(o_list)):
+        if f"{o_list[i][0]},{o_list[i][1]}" not in hash_list:
+            total_load += length - o_list[i][0]
+
+    return total_load
+
 # Part 1
 total_load = calculate_load(lines)
 
@@ -53,8 +63,8 @@ for i in range(len(lines)):
 
 def north(o_list):
     col_hashes = [-1 for i in range(len(lines[0]))]
-    o_list.sort(reverse=False)
-
+    o_list.sort(key=lambda x: x[0], reverse=False)
+    # unsorted_list.sort(key=lambda x: x[3])
 
     for i, o in enumerate(o_list):
         current_col = o[1]
@@ -72,7 +82,7 @@ def north(o_list):
 
 def west(o_list):
     row_hashes = [-1 for i in range(len(lines))]
-    o_list.sort(reverse=False)
+    o_list.sort(key=lambda x: x[1], reverse=False)
 
     for i, o in enumerate(o_list):
         current_row = o[0]
@@ -90,7 +100,7 @@ def west(o_list):
 
 def east(o_list):
     row_hashes = [len(lines) for i in range(len(lines))]
-    o_list.sort(reverse=True)
+    o_list.sort(key=lambda x: x[1], reverse=True)
 
     for i, o in enumerate(o_list):
         current_row = o[0]
@@ -108,7 +118,7 @@ def east(o_list):
 
 def south(o_list):
     col_hashes = [len(lines[0]) for i in range(len(lines[0]))]
-    o_list.sort(reverse=True)
+    o_list.sort(key=lambda x: x[0], reverse=True)
 
     for i, o in enumerate(o_list):
         current_col = o[1]
@@ -145,11 +155,11 @@ def plot(o_list):
     for i in range(len(plot)):
         inner_string = "".join(plot[i])
         output.append(inner_string)
-        # print(inner_string)
+        print(inner_string)
 
     return output
 
-print(o_list)
+
 for n in range(cycles):
     # North - get positions
     o_list = north(o_list)
@@ -163,12 +173,13 @@ for n in range(cycles):
     # East
     o_list = east(o_list)
 
+    # print(total_load_2)
+    print(n)
     pass
 
-new_lines = plot(o_list)
-total_load_2 = calculate_load(new_lines)
+total_load_2 = calculate_load_2(o_list, hash_list)
 
-print(total_load_2)
-
+print("-------------")
 print(total_load)
-
+print(total_load_2)
+print("-------------")
