@@ -23,125 +23,185 @@ def plot(o_list):
 
     return output
 
-i = 0
-j = 0
 
-bools = [False, False, True, False] # 0: Left , 1: Up, 2: Right, 3: Down
+edge_lengths = 2 * len(lines) + 2 * len(lines[0])
 
-ray_queue = [[i, j]]
-next_dir = []
-energised = {}
-first = True
+i_start = 0
+j_start = 0
+start_direction = 3
+edge_bool = [True, False, False, False]  # Top edge first
 
-# Get direction
-dir = bools.index(True)
+max_energised = -1e8
 
-n = 0
-while ray_queue:
-    current_cell = f"{i},{j}"
-    print(dir)
-    if current_cell not in energised:
-        energised[current_cell] = 0
+for edge in range(edge_lengths):
 
-    if lines[i][j] == "\\":
-        if dir == 0: dir = 1
-        elif dir == 1: dir = 0
-        elif dir == 2: dir = 3
-        elif dir == 3: dir = 2
+    ray_queue = [[i_start, j_start]]
+    next_dir = []
+    energised = {}
+    first = True
+    beam_history = {}
+    beam_bool = False
 
-        bools = [False for i in range(4)]
-        bools[dir] = True
+    # Get direction
+    direction = start_direction
+    bools = [False for i in range(4)]   # 0: Left, 1: Up, 2: Right, 3: Down
+    bools[direction] = True
 
-    elif lines[i][j] == "/":
-        if dir == 0: dir = 3
-        elif dir == 3: dir = 0
-        elif dir == 1: dir = 2
-        elif dir == 2: dir = 1
+    i = ray_queue[0][0]
+    j = ray_queue[0][1]
 
-        bools = [False for i in range(4)]
-        bools[dir] = True
+    n = 0
 
-    elif lines[i][j] == "|":
-        # Left
-        if dir == 0:
-            if not first:
-                # Queueing
-                ray_queue.append([i, j])
-                # Next up
-                next_dir.append(2)
+    while ray_queue:
+        current_cell = f"{i},{j}"
 
-            # Goes down
+        prev_dir = direction
+
+        if current_cell not in energised:
+            energised[current_cell] = 0
+
+        if lines[i][j] == "\\":
+            if direction == 0: direction = 1
+            elif direction == 1: direction = 0
+            elif direction == 2: direction = 3
+            elif direction == 3: direction = 2
+
             bools = [False for i in range(4)]
-            dir = 3
-            bools[dir] = True
+            bools[direction] = True
 
-        # Right
-        elif dir == 2:
-            if not first:
-                # Queueing
-                ray_queue.append([i, j])
-                # Next down
-                next_dir.append(0)
+        elif lines[i][j] == "/":
+            if direction == 0: direction = 3
+            elif direction == 3: direction = 0
+            elif direction == 1: direction = 2
+            elif direction == 2: direction = 1
 
-            # Goes up
             bools = [False for i in range(4)]
-            dir = 1
-            bools[dir] = True
+            bools[direction] = True
 
-    elif lines[i][j] == "-":
-        # Up
-        if dir == 1:
-            if not first:
-                # Queueing
-                ray_queue.append([i, j])
-                # Next left
-                next_dir.append(3)
+        elif lines[i][j] == "|":
+            # Left
+            if direction == 0:
+                if not first:
+                    # Queueing
+                    ray_queue.append([i, j])
+                    # Next up
+                    next_dir.append(2)
 
-            # Goes right
-            bools = [False for i in range(4)]
-            dir = 2
-            bools[dir] = True
+                # Goes down
+                bools = [False for i in range(4)]
+                direction = 3
+                bools[direction] = True
 
-        # Down
-        elif dir == 3:
-            if not first:
-                # Queueing
-                ray_queue.append([i, j])
-                # Next right
-                next_dir.append(1)
+            # Right
+            elif direction == 2:
+                if not first:
+                    # Queueing
+                    ray_queue.append([i, j])
+                    # Next down
+                    next_dir.append(0)
 
-            # Goes left
-            bools = [False for i in range(4)]
-            dir = 0
-            bools[dir] = True
+                # Goes up
+                bools = [False for i in range(4)]
+                direction = 1
+                bools[direction] = True
 
-    first = False
-    if bools[0]:
-        j -= 1
-    elif bools[1]:
-        i -= 1
-    elif bools[2]:
-        j += 1
-    elif bools[3]:
-        i += 1
+        elif lines[i][j] == "-":
+            # Up
+            if direction == 1:
+                if not first:
+                    # Queueing
+                    ray_queue.append([i, j])
+                    # Next left
+                    next_dir.append(3)
 
-    ray_queue[0] = [i, j]
-    print(f"{n} : {len(energised)}")
-    n += 1
-    if n > 100000000:
-        break
-    if i > len(lines) - 1 or i < 0 or j > len(lines[0]) - 1 or j < 0:
-        ray_queue.pop(0)
-        if not ray_queue:
-            break
-        dir = next_dir[0]
-        next_dir.pop(0)
-        i = ray_queue[0][0]
-        j = ray_queue[0][1]
-        first = True
+                # Goes right
+                bools = [False for i in range(4)]
+                direction = 2
+                bools[direction] = True
+
+            # Down
+            elif direction == 3:
+                if not first:
+                    # Queueing
+                    ray_queue.append([i, j])
+                    # Next right
+                    next_dir.append(1)
+
+                # Goes left
+                bools = [False for i in range(4)]
+                direction = 0
+                bools[direction] = True
+
+        current_beam = current_cell + f",{prev_dir}"
+        if current_beam not in beam_history:
+            beam_history[current_beam] = 0
+        else:
+            beam_bool = True
+
+        first = False
+        if bools[0]:
+            j -= 1
+        elif bools[1]:
+            i -= 1
+        elif bools[2]:
+            j += 1
+        elif bools[3]:
+            i += 1
+
+        ray_queue[0] = [i, j]
+        # print(f"{n} : {len(energised)}")
+        n += 1
+
+
+        if i > len(lines) - 1 or i < 0 or j > len(lines[0]) - 1 or j < 0 or beam_bool:
+            ray_queue.pop(0)
+            if not ray_queue:
+                break
+            direction = next_dir[0]
+            next_dir.pop(0)
+            i = ray_queue[0][0]
+            j = ray_queue[0][1]
+            first = True
+            beam_bool = False
+
+
+    if i_start == 0 and j_start == len(lines[0]) - 1 and not edge_bool[1]:
+        start_direction = 0
+        edge_bool = [False for i in range(4)]
+        edge_bool[1] = True
+    elif i_start == len(lines) - 1 and j_start == len(lines[0]) - 1 and not edge_bool[2]:
+        start_direction = 1
+        edge_bool = [False for i in range(4)]
+        edge_bool[2] = True
+
+    elif i_start == len(lines) - 1 and j_start == 0 and not edge_bool[3]:
+        start_direction = 2
+        edge_bool = [False for i in range(4)]
+        edge_bool[3] = True
+
+    elif i_start == 0 and j_start == 0 and not edge_bool[0] and n > 0:
+        start_direction = 3
+        edge_bool = [False for i in range(4)]
+        edge_bool[0] = True
+
+    else:
+        if edge_bool[0]:
+            j_start += 1
+        elif edge_bool[1]:
+            i_start += 1
+        elif edge_bool[2]:
+            j_start -= 1
+        elif edge_bool[3]:
+            i_start -= 1
+
+    energised_length = len(energised)
+
+    if energised_length > max_energised:
+        max_energised = energised_length
+
 
 # Part 1
-print(len(energised))
+print(max_energised)
 # plot(energised)
 
 # Part 2
